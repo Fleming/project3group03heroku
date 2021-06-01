@@ -8,17 +8,14 @@ from flask import (
     request,
     redirect)
 
-# Save Model Using joblib
-import pandas
-from sklearn import model_selection
-from sklearn.linear_model import LogisticRegression
-import joblib
-
-
 #################################################
 # Flask Setup
 #################################################
 app = Flask(__name__)
+
+#################################################
+# Database Setup
+#################################################
 
 from flask_sqlalchemy import SQLAlchemy
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', '') or "sqlite:///db.sqlite"
@@ -29,9 +26,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 Home = create_classes(db)
+
 # create route that renders index.html template
-
-
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -40,45 +36,49 @@ def home():
 # Query the database and send the jsonified results
 @app.route("/send", methods=["GET", "POST"])
 def send():
-    predicted_price_rounded = 0
-    gotvalues=  False
-
-    if request.method == "POST":
-        gotvalues = True
-        numBedRooms = request.form["numBedRooms"]
-        numBathRooms = request.form["numBathRooms"]
-        condition = min(4, max(0, int(request.form["condition"])))
-        houseAge = request.form['houseAge']
-        houseSq = request.form["houseSq"]
-        condition_array = [0, 0, 0, 0]
-        # app.logger.info(numBedRooms)
-
-        if int(condition) != 0:
-            condition_array[condition-2] = 1
-
-
-        linear_ridge_model = joblib.load("ridge_model.sav")
-        loaded_y_scaler = joblib.load("y_scaler.sav")
-        loaded_X_scaler = joblib.load("X_scaler.sav")
-        house_data_scaled = loaded_X_scaler.transform(
-            [[numBedRooms, numBathRooms, houseSq, condition_array[0], condition_array[1], condition_array[2], condition_array[3], houseAge]])
-        predicted_price = loaded_y_scaler.inverse_transform(
-            linear_ridge_model.predict(house_data_scaled))
-        predicted_price_rounded = "${:,.2f}".format(
-            round(predicted_price[0][0]))
-        return_predicted_price = [{
-            "predited_price": predicted_price_rounded
-        }]
-
-    bedReturn = numBedRooms if gotvalues else ""
-    bathReturn = numBathRooms if gotvalues else ""
-    conditionReturn = condition if gotvalues else ""
-    ageReturn = houseAge if gotvalues else ""
-    sqftReturn = houseSq if gotvalues else ""
+  if request.method == "POST":
+    numBedRooms = request.form["numBedRooms"]
+    numBathRooms = request.form["numBathRooms"]
+    condition = request.form["condition"]
+    houseAge = request.form['houseAge']
+    houseSq = request.form["houseSq"]
+    print(numBedRooms)
+    print(numBathRooms)
+    print(condition)
+    print(houseAge)
+    print(houseSq)
+    #pet = Pet(name=name, lat=lat, lon=lon)
+    #db.session.add(pet)
+    #db.session.commit()
+    #return redirect("/", code=302)
+  return render_template("form.html")
 
 
-    return render_template("form.html", price= predicted_price_rounded, bed = bedReturn, bath = bathReturn, condition = conditionReturn, age = ageReturn, sqft = sqftReturn)
+@app.route("/api/pals")
+def pals():
+    results = db.session.query(Pet.name, Pet.lat, Pet.lon).all()
 
+    hover_text = [result[0] for result in results]
+    lat = [result[1] for result in results]
+    lon = [result[2] for result in results]
+
+    pet_data = [{
+        "type": "scattergeo",
+        "locationmode": "USA-states",
+        "lat": lat,
+        "lon": lon,
+        "text": hover_text,
+        "hoverinfo": "text",
+        "marker": {
+            "size": 50,
+            "line": {
+                "color": "rgb(8,8,8)",
+                "width": 1
+            },
+        }
+    }]
+
+    return jsonify(pet_data)
 
 
 if __name__ == "__main__":
