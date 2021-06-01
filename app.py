@@ -1,5 +1,5 @@
 # import necessary libraries
-from flask_sqlalchemy import SQLAlchemy
+from models import create_classes
 import os
 from flask import (
     Flask,
