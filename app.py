@@ -8,6 +8,13 @@ from flask import (
     request,
     redirect)
 
+# Save Model Using joblib
+import pandas
+from sklearn import model_selection
+from sklearn.linear_model import LogisticRegression
+import joblib
+
+
 #################################################
 # Flask Setup
 #################################################
