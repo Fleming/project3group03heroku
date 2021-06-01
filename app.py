@@ -33,15 +33,13 @@ Home = create_classes(db)
 
 
 @app.route("/")
-def welcome():
-    app.logger.info("home")
-    return render_template("form.html", price= "$0.00", bed = "", bath = "", condition = "", age = "", sqft = "")
+def home():
+    return render_template("index.html")
 
 
 # Query the database and send the jsonified results
 @app.route("/send", methods=["GET", "POST"])
 def send():
-    app.logger.info("reached beginning of method")
     predicted_price_rounded = 0
     gotvalues=  False
 
