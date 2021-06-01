@@ -1,5 +1,5 @@
 # import necessary libraries
-# from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 import os
 from flask import (
     Flask,
@@ -19,6 +19,16 @@ import joblib
 # Flask Setup
 #################################################
 app = Flask(__name__)
+
+from flask_sqlalchemy import SQLAlchemy
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', '') or "sqlite:///db.sqlite"
+
+# Remove tracking modifications
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+
+Home = create_classes(db)
 # create route that renders index.html template
 
 
