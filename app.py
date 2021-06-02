@@ -73,7 +73,7 @@ def send():
     sqftReturn = houseSq if gotvalues else ""
 
 
-    return render_template("form.html", price= predicted_price_rounded, bed = bedReturn, bath = bathReturn, condition = conditionReturn, age = ageReturn, sqft = sqftReturn)
+    return render_template("form.html", price= predicted_price_rounded)
 
 
 
