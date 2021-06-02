@@ -9,7 +9,6 @@ from flask import (
     redirect)
 
 # Save Model Using joblib
-import pandas
 
 
 #################################################
