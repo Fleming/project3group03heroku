@@ -2,6 +2,9 @@
 from models import create_classes
 import os
 import joblib
+import pandas
+from sklearn import model_selection
+from sklearn.linear_model import LogisticRegression
 from flask import (
     Flask,
     render_template,
