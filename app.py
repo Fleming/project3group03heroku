@@ -10,9 +10,6 @@ from flask import (
 
 # Save Model Using joblib
 import pandas
-from sklearn import model_selection
-from sklearn.linear_model import LogisticRegression
-import joblib
 
 
 #################################################
